@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz & Jokes Hub</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+  background: url('images/background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  padding: 30px;
+  text-align: center;
+  min-height: 100vh;
+}
+
+
+    h1, h2 {
+      margin-bottom: 70px;
+      color :mistyrose;
+      border-color: black;
+      text-shadow: 2px 2px 7px rgb(232, 240, 11);
+      
+      
+    }
+
+    .card-container, .topics {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .card, .topic-card {
+      background: ;
+      width: 45%;
+      height: 200px;
+      border-radius: 12px;
+      border-color: rgb(29, 11, 225);
+      box-shadow: 0 0px 20px rgb(8, 204, 243);
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      color: #cbe0ff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .card:hover, .topic-card:hover {
+      transform: scale(1.05);
+      color:black;
+      background-color:lightskyblue;
+    }
+
+    button {
+      background: #6480f0;
+      color: rgb(15, 14, 14);
+      padding: 10px 20px;
+      margin: 20px auto;
+      display: block;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .quiz-content, .joke-card, .fact-card {
+      max-width: 700px;
+      margin: auto;
+    }
+
+    #options div {
+      background: #b6d7ec;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #options div:hover, #options div.selected {
+      background-color: #4890fb;
+      border-left: 4px solid #040404;
+    }
+
+    .back {
+      background: #f0f5f7;
+      
+    }
+
+    .question-counter {
+      margin: 40px ;
+      color: azure;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    #resultBox {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Home Page -->
+  <div id="home">
+    <h1>🎯 Let’s Dive In 🎯</h1>
+    <div class="card-container">
+      <div class="card" onclick="goTo('quiz-select')">🧠 Quiz</div>
+      <div class="card" onclick="goTo('jokes-box')">😂 Jokes</div>
+      <div class="card" onclick="goTo('facts-box')">💡 Fun Facts</div>
+    </div>
+  </div>
+
+  <!-- Topic Selection -->
+  <div id="quiz-select" style="display:none">
+    <h2>Select Quiz Topic</h2>
+    <div class="topics">
+      <div class="topic-card" onclick="startQuiz('html')">HTML</div>
+      <div class="topic-card" onclick="startQuiz('c')">C</div>
+      <div class="topic-card" onclick="startQuiz('java')">Java</div>
+      <div class="topic-card" onclick="startQuiz('python')">Python</div>
+      <div class="topic-card" onclick="startQuiz('gk')">GK</div>
+    </div>
+    <button class="back" onclick="goTo('home')">🔙 Back</button>
+  </div>
+
+  <!-- Quiz Box -->
+  <div id="quiz-box" style="display:none">
+    <div class="quiz-content">
+      <div class="question-counter" id="counter"></div>
+      <h2 id="question">Question</h2>
+      <div id="options"></div>
+      <button id="nextBtn">Next</button>
+      <div id="resultBox" style="display:none">
+        <h2 id="resultText"></h2>
+        <div id="review"></div>
+        <button onclick="goTo('home')" class="back">🔙 Back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fun Fact Section -->
+  <div id="facts-box" style="display:none">
+    <h2>Select Fact Type</h2>
+    <div class="topics">
+      <div class="topic-card" onclick="getFact('random')">Random Fact</div>
+      <div class="topic-card" onclick="getFact('science')">Science Fact</div>
+      <div class="topic-card" onclick="getFact('animal')">Animal Fact</div>
+    </div>
+    <div class="fact-card">
+      <h2>💡 Fun Fact</h2>
+      <p id="factText">Click any card above to show a fun fact!</p>
+      <button class="back" onclick="goTo('home')">🔙 Back</button>
+    </div>
+  </div>
+
+  <!-- Fun Fact Display Page -->
+<div id="fact-display" style="display:none">
+  <h2>💡 Your Fun Fact</h2>
+  <p id="factTextDisplay" style="font-size: 40px; margin: 20px auto; color:rgb(99, 202, 249); 700px;"></p>
+  <button class="back" onclick="goTo('facts-box')">🔙 Back to Categories</button>
+</div>
+
+
+  <!-- Jokes Section -->
+  <div id="jokes-box" style="display:none">
+    <div class="joke-card">
+      <h2>🤣 Random Joke</h2>
+      <p id="jokeText" style="font-size: 40px; margin: 20px auto; color:rgb(99, 202, 249); 700px;">Click below to get a joke!</p>
+      <button onclick="getJoke()">Get Joke</button>
+      <button class="back" onclick="goTo('home')">🔙 Back</button>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const quizData = {
+      html: [
+        { q: "What does HTML stand for?", o: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup"], a: 0 },
+        { q: "Choose the correct HTML element for the largest heading:", o: ["<heading>", "<h1>", "<h6>"], a: 1 },
+        { q: "What is the correct HTML for creating a hyperlink?", o: ["<a>http://example.com</a>", "<a href='http://example.com'>Link</a>", "<link src='example'>"], a: 1 },
+        { q: "Which tag breaks the line?", o: ["<br>", "<break>", "<p>"], a: 0 },
+        { q: "How to add a background color?", o: ["style='bgcolor:red'", "background='red'", "style='background-color:red;'"], a: 2 }
+      ],
+      c: [
+        { q: "Which keyword is used to declare a variable in C?", o: ["int", "var", "declare"], a: 0 },
+        { q: "Which function is used to output in C?", o: ["cin", "printf", "cout"], a: 1 },
+        { q: "C is a...", o: ["High-level Language", "Low-level Language", "Assembly Language"], a: 0 },
+        { q: "What is the extension of C file?", o: [".c", ".cpp", ".java"], a: 0 },
+        { q: "Which loop is entry controlled?", o: ["do-while", "for", "goto"], a: 1 }
+      ],
+      java: [
+        { q: "Which keyword is used to inherit in Java?", o: ["extends", "inherits", "implement"], a: 0 },
+        { q: "Java is...", o: ["procedural", "object-oriented", "scripting"], a: 1 },
+        { q: "Which method is entry point in Java?", o: ["main()", "start()", "run()"], a: 0 },
+        { q: "What does JVM stand for?", o: ["Java Variable Machine", "Java Virtual Machine", "Java Verified Mode"], a: 1 },
+        { q: ".class file is generated after compiling?", o: ["C file", "Java file", "Python file"], a: 1 }
+      ],
+      python: [
+        { q: "Which symbol is used for comments in Python?", o: ["//", "#", "--"], a: 1 },
+        { q: "Python is...", o: ["compiled", "interpreted", "both"], a: 1 },
+        { q: "How do you define a function?", o: ["function()", "def", "define"], a: 1 },
+        { q: "Which is immutable?", o: ["list", "set", "tuple"], a: 2 },
+        { q: "Which operator is used for power?", o: ["^", "**", "%"], a: 1 }
+      ],
+      gk: [
+        { q: "Which is the capital of India?", o: ["Mumbai", "Delhi", "Chennai"], a: 1 },
+        { q: "What is the national flower of India?", o: ["Rose", "Sunflower", "Lotus"], a: 2 },
+        { q: "Who wrote the national anthem?", o: ["Tagore", "Gandhi", "Nehru"], a: 0 },
+        { q: "How many players in a cricket team?", o: ["11", "10", "9"], a: 0 },
+        { q: "Largest planet in the solar system?", o: ["Earth", "Mars", "Jupiter"], a: 2 }
+      ]
+    };
+
+    let topic = "", index = 0, score = 0, selected = null;
+    const counter = document.getElementById("counter");
+    const question = document.getElementById("question");
+    const options = document.getElementById("options");
+
+    function goTo(section) {
+      ["home", "quiz-select", "quiz-box", "jokes-box", "facts-box"].forEach(id => {
+        document.getElementById(id).style.display = "none";
+      });
+      document.getElementById(section).style.display = "block";
+    }
+
+    function startQuiz(t) {
+      topic = t;
+      index = 0;
+      score = 0;
+      document.getElementById("resultBox").style.display = "none";
+      document.getElementById("quiz-select").style.display = "none";
+      document.getElementById("quiz-box").style.display = "block";
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = quizData[topic][index];
+      question.textContent = q.q;
+      counter.textContent = `Question ${index + 1} / ${quizData[topic].length}`;
+      options.innerHTML = "";
+      selected = null;
+
+      q.o.forEach((opt, i) => {
+        const div = document.createElement("div");
+        div.textContent = opt;
+        div.onclick = () => selectOption(div, i);
+        options.appendChild(div);
+      });
+    }
+
+    function selectOption(div, i) {
+      [...options.children].forEach(c => c.classList.remove("selected"));
+      div.classList.add("selected");
+      selected = i;
+    }
+
+    document.getElementById("nextBtn").onclick = () => {
+      if (selected === null) return alert("Please select an option.");
+      if (selected === quizData[topic][index].a) score++;
+      index++;
+      if (index < quizData[topic].length) loadQuestion();
+      else showResult();
+    };
+
+    function showResult() {
+      document.getElementById("resultText").textContent = `✅ You scored ${score} out of ${quizData[topic].length}`;
+      document.getElementById("resultBox").style.display = "block";
+    }
+
+    function getJoke() {
+      fetch("https://official-joke-api.appspot.com/random_joke")
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("jokeText").textContent = `${data.setup} 😂 ${data.punchline}`;
+        });
+    }
+
+
+
+
+    const hardcodedFacts = {
+  random: [
+    "Bananas are berries, but strawberries aren't.",
+    "The Eiffel Tower can grow more than 6 inches in summer.",
+    "Octopuses have three hearts.",
+    "Honey never spoils. Archaeologists have found 3000-year-old honey that’s still edible."
+  ],
+  science: [
+    "Water expands when it freezes — unlike most substances.",
+    "The human body contains enough carbon to fill 9,000 pencils.",
+    "A day on Venus is longer than a year on Venus.",
+    "Light from the Sun takes about 8 minutes to reach Earth."
+  ],
+  animal: [
+    "Elephants are the only mammals that can't jump.",
+    "A group of flamingos is called a 'flamboyance'.",
+    "Sloths can hold their breath longer than dolphins can.",
+    "Cows have best friends and get stressed when separated."
+  ]
+};
+
+function getFact(type) {
+  const facts = hardcodedFacts[type] || hardcodedFacts["random"];
+  const randomFact = facts[Math.floor(Math.random() * facts.length)];
+
+  // Set fact text to the next page section
+  document.getElementById("factTextDisplay").textContent = randomFact;
+
+  // Switch to fact-display section
+  goTo('fact-display');
+}
+
+
+
+  </script>
+</body>
+</html>
